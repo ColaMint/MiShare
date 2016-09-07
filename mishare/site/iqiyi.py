@@ -21,6 +21,9 @@ class Iqiyi(SiteBase):
         input_password = self.driver.find_element_by_css_selector('.acountBorder[data-loginbox-elem=passwdWrap] > input')
         input_password.send_keys(self.password)
 
+        # 不要记住账号密码
+        #remember_me
+
         loggin_btn = self.driver.find_element_by_css_selector('a[data-loginbox-elem=loginBtn]')
         loggin_btn.click();
 
@@ -43,8 +46,8 @@ class Iqiyi(SiteBase):
         self._save_verification_code()
 
     def _input_verification_code(self, verification_code):
-        pic_code_input = self.driver.find_element_by_css_selector('input[data-loginbox-elem=piccodeInput]')
-        pic_code_input.send_keys(verification_code)
+        verification_code_input = self.driver.find_element_by_css_selector('input[data-loginbox-elem=piccodeInput]')
+        verification_code_input.send_keys(verification_code)
         loggin_btn = self.driver.find_element_by_css_selector('a[data-loginbox-elem=loginBtn]')
         loggin_btn.click();
 
