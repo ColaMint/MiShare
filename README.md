@@ -51,9 +51,13 @@
 略
 
 ## 登录
+
 登陆成功时会设置cookie，保存会话ID
+
 url:        /login
+
 method:     POST
+
 parameters:
 
 | Key      | Type   | Mandatory | Description |
@@ -70,18 +74,22 @@ response:
     "contribution_value":  	100    			// 贡献值
 }
 ```
+
 possible error code: -101
 
 ## 获取网站列表
 
 url:           	/site_list
+
 methord:       	GET
+
 parameters:
 
 | Key      | Type   | Mandatory | Description |
 |----------|--------|-----------|-------------|
 
 response:
+
 ```javascript
 {
     "c": 0,
@@ -96,18 +104,22 @@ response:
     ]
 }
 ```
+
 possible error code: -100
 
 ## 获取网站账号列表
 
 url:           	/account_list/<site_id>
+
 methord:       	GET
+
 parameters:
 
 | Key      | Type   | Mandatory | Description |
 |----------|--------|-----------|-------------|
 
 response:
+
 ```javascript
 {
     "c": 0,
@@ -126,18 +138,22 @@ response:
     ]
 }
 ```
+
 possible error code: -100
 
 ## 获取我共享的账号列表
 
 url:   		/my_sharing_account_list
+
 method:		GET
+
 parameters:
 
 | Key      | Type   | Mandatory | Description |
 |----------|--------|-----------|-------------|
 
 response:
+
 ```javascript
 {
 	"c": 0,
@@ -155,18 +171,22 @@ response:
 	]
 }
 ```
+
 possible error code: -100
 
 ## 获取我正在使用的账号列表
 
 url:   		/my_renting_account_list
+
 method:		GET
+
 parameters:
 
 | Key      | Type   | Mandatory | Description |
 |----------|--------|-----------|-------------|
 
 response:
+
 ```javascript
 {
 	"c": 0,
@@ -192,12 +212,15 @@ response:
 	]
 }
 ```
+
 possible error code: -100
 
 ## 添加共享账号
 
 url:   		/add_account
+
 method:		POST
+
 parameters:
 
 | Key               | Type   | Mandatory | Description                                                                                    |
@@ -207,6 +230,7 @@ parameters:
 | verification_code | string | N         | 验证码，第一次点击添加共享账号时，若返回信息表明需要验证码，则下需要填上验证码后再发送一次请求 |
 
 response:
+
 ```javascript
 {
        	"c": 0
@@ -218,12 +242,15 @@ response:
        	"verification_code_base64": "xxxxx"    		// 验证码图片的base64编码字符串
 }
 ```
+
 possible error code: -100, -105, -106
 
 ## 修改/激活 共享账号(时间不够不做)
 
 url:   		/modify_account
+
 method:	       	POST
+
 parameters:
 
 | Key               | Type   | Mandatory | Description                                                                                      |
@@ -233,6 +260,7 @@ parameters:
 | verification_code | string | N         | 验证码，第一次点击兑换时此字段可为空，若返回信息表明需要验证码，则需要填上验证码后再发送一次请求 |
 
 response:
+
 ```javascript
 {
     "c": 0,
@@ -242,19 +270,23 @@ response:
     "contribution_value_per_hour":    25    		// 每小时需要多少贡献值
 }
 ```
+
 ```javascript
 {
        	"c": -105,
        	"verification_code_base64": "xxxxx"    		// 验证码图片的base64编码字符串
 }
 ```
+
 possible error code: -100, -105, -106
 
 
 ## 兑换账号
 
 url:   		/rent_account
+
 method:	    POST
+
 parameters:
 
 | Key               | Type   | Mandatory | Description                                                                                      |
@@ -263,6 +295,7 @@ parameters:
 | verification_code | string | Y         | 验证码，第一次点击兑换时此字段可为空，若返回信息表明需要验证码，则需要填上验证码后再发送一次请求 |
 
 response:
+
 ```javascript
 {
     "c": 					0,
@@ -283,18 +316,22 @@ response:
 	]
 }
 ```
+
 ```javascript
 {
        	"c": -105,
        	"verification_code_base64": "xxxxx"    		// 验证码图片的base64编码字符串
 }
 ```
+
 possible error code: -100, -104, -105, -106, -109
 
 ## 停止使用账号
 
 url:   		/stop_renting_account
+
 method:	       	POST
+
 parameters:
 
 | Key        | Type | Mandatory | Description |
@@ -302,17 +339,21 @@ parameters:
 | account_id | int  | Y         | 账号ID      |
 
 response:
+
 ```javascript
 {
        	"c": 0
 }
 ```
+
 possible error code: -100, -107
 
 ## 上报账号状态
 
 url:   		/report_renting_account
+
 method:	       	POST
+
 parameters:
 
 | Key        | Type                 | Mandatory | Description                                          |
@@ -321,6 +362,7 @@ parameters:
 | in_use     | bool("true"/"false") | Y         | 是否正在使用，即打开的标签页中是否有该账号监控的域名 |
 
 response:
+
 ```javascript
 {
        	"c": 0,
@@ -340,4 +382,5 @@ response:
     ]
 }
 ```
+
 possible error code: -100
