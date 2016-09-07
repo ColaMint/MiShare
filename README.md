@@ -233,13 +233,13 @@ response:
 
 ```javascript
 {
-       	"c": 0
+    "c": 0
 }
 ```
 ```javascript
 {
-       	"c": -105,
-       	"verification_code_base64": "xxxxx"    		// 验证码图片的base64编码字符串
+	"c": -105,
+	"verification_code_base64": "xxxxx"    		// 验证码图片的base64编码字符串
 }
 ```
 
@@ -273,8 +273,8 @@ response:
 
 ```javascript
 {
-       	"c": -105,
-       	"verification_code_base64": "xxxxx"    		// 验证码图片的base64编码字符串
+	"c": -105,
+	"verification_code_base64": "xxxxx"    		// 验证码图片的base64编码字符串
 }
 ```
 
@@ -319,8 +319,8 @@ response:
 
 ```javascript
 {
-       	"c": -105,
-       	"verification_code_base64": "xxxxx"    		// 验证码图片的base64编码字符串
+	"c": -105,
+	"verification_code_base64": "xxxxx"    		// 验证码图片的base64编码字符串
 }
 ```
 
@@ -342,7 +342,7 @@ response:
 
 ```javascript
 {
-       	"c": 0
+    "c": 0
 }
 ```
 
@@ -365,7 +365,7 @@ response:
 
 ```javascript
 {
-       	"c": 0,
+    "c": 0,
     "contribution_value": 100,  // 剩余贡献值
     "event": 0 | 1 | 2,         // 0: 不执行任何操作, 1: cookie续命, 2: 停止使用该账号，删除cookie, 关闭相关便签
     "cookies": [                // event = 1 时，返回的新cookie
