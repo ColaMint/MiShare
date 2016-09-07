@@ -52,7 +52,6 @@
 
 ## 登录
 
-```
 url:      	/login
 method:     POST
 parameters:
@@ -69,11 +68,9 @@ response:
 }
 possible error code: -101
 登陆成功时会设置cookie，保存会话ID
-```
 
 ## 获取网站列表
 
-```
 url:    	/site_list
 methord: 	GET
 parameters:
@@ -93,11 +90,9 @@ response:
 	]
 }
 possible error code: -100
-```
 
 ## 获取网站账号列表
 
-```
 url:    	/account_list/<site_id>
 methord: 	GET
 parameters:
@@ -121,11 +116,9 @@ response:
 	]
 }
 possible error code: -100
-```
 
 ## 获取我共享的账号列表
 
-```
 url: 		/my_sharing_account_list
 method:		GET
 parameters:
@@ -148,11 +141,9 @@ response:
 	]
 }
 possible error code: -100
-```
 
 ## 获取我正在使用的账号列表
 
-```
 url: 		/my_renting_account_list
 method:		GET
 parameters:
@@ -183,11 +174,9 @@ response:
 	]
 }
 possible error code: -100
-```
 
 ## 添加共享账号
 
-```
 url: 		/add_account
 method:		POST
 parameters:
@@ -206,11 +195,9 @@ response:
 	"verification_code_base64": "xxxxx"		// 验证码图片的base64编码字符串
 }
 possible error code: -100, -105, -106
-```
 
 ## 修改/激活 共享账号(时间不够不做)
 
-```
 url: 		/modify_account
 method:	 	POST
 parameters:
@@ -236,7 +223,6 @@ possible error code: -100, -105, -106
 
 ## 兑换账号
 
-```
 url: 		/rent_account
 method:	 	POST
 parameters:
@@ -268,11 +254,9 @@ response:
 	"verification_code_base64": "xxxxx"		// 验证码图片的base64编码字符串
 }
 possible error code: -100, -104, -105, -106, -109
-```
 
 ## 停止使用账号
 
-```
 url: 		/stop_renting_account
 method:	 	POST
 parameters:
@@ -284,11 +268,9 @@ response:
 	"c": 0
 }
 possible error code: -100, -107
-```
 
 ## 上报账号状态
 
-```
 url: 		/report_renting_account
 method:	 	POST
 parameters:
@@ -315,4 +297,3 @@ response:
     ]
 }
 possible error code: -100
-```
