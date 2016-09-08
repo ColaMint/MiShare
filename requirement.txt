@@ -2,3 +2,6 @@ lxml
 cssselect
 selenium
 pillow
+flask
+MySQL-python
+flask-login
