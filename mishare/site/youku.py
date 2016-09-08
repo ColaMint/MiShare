@@ -12,10 +12,10 @@ class Youku(SiteBase):
         loggin_btn = self.driver.find_element_by_css_selector('#qheader_login')
         loggin_btn.click();
 
-        input_username = self.driver.find_element_by_css_selector('#YT-normalLogin > span.YT-form-tips.YT-l-account-tips')
+        input_username = self.driver.find_element_by_css_selector('#YT-ytaccount')
         input_username.send_keys(self.username)
 
-        input_password = self.driver.find_element_by_css_selector('#YT-normalLogin > span.YT-form-tips.YT-l-password-tips')
+        input_password = self.driver.find_element_by_css_selector('#YT-ytpassword')
         input_password.send_keys(self.password)
 
         # 不要记住账号密码
@@ -52,7 +52,7 @@ class Youku(SiteBase):
 
     def _save_vip_expire_timestamp(self):
         # TODO
-        return 1480953735
+        self.vip_expire_timestamp = 1480953735
 
     def _validate_cookies(self):
         """

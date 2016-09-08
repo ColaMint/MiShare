@@ -63,7 +63,7 @@ class SiteBase(object):
         self.username = username
         self.password = password
         self.driver = webdriver.Chrome()
-        self.driver.implicitly_wait(10)
+        self.driver.implicitly_wait(5)
         self.driver.set_window_size(1024, 800)
 
     def login(self):
@@ -160,7 +160,7 @@ class SiteBase(object):
         验证cookie与vip的有效性, 将结果保存在seld.valid
         :rtype: None
         """
-        self._save_cookies()
+        self._save_cookies(3)
         if not self._validate_cookies():
             self.valid = False
             return
