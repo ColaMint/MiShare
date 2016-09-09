@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 
+CODE_OK                         = 0
 CODE_LOGIN_REQUIRED             = -100
 CODE_USER_OR_PASS_IS_WRONG      = -101
 CODE_LACK_OF_POINTS             = -102

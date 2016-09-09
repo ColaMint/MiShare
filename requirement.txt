@@ -5,3 +5,4 @@ pillow
 flask
 MySQL-python
 flask-login
+simplejson
