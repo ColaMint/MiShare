@@ -38,10 +38,10 @@ class TestSite(unittest.TestCase):
                 self.assertGreater(iqiyi.vip_expire_timestamp, 0)
                 self.assertGreater(len(iqiyi.cookies), 0)
 
-        iyiqi.close()
+        iqiyi.close()
 
     def test_youku(self):
-        youku = Youku('13710230105', '03545328')
+        youku = Youku('13710230105', 'slmy03545328')
         youku.login()
         if youku.need_verification_code:
             self.assertIsNone(youku.valid)
