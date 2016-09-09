@@ -1,10 +1,11 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 
+import os
 from flask import Flask, g
 from mishare.lib.database import Database
 from mishare.etc.config import database
-from flask.ext.login import LoginManager, UserMixin
+from flask_login import LoginManager, UserMixin
 
 db = Database(
     host=database['host'],
@@ -13,7 +14,9 @@ db = Database(
     passwd=database['passwd'],
     db=database['db'])
 
-app = Flask(__name__)
+
+static_folder = os.path.abspath(os.path.join(__file__, '../../static'))
+app = Flask(__name__, static_folder=static_folder)
 app.secret_key = 'mishare'
 
 login_manager = LoginManager()
@@ -49,3 +52,5 @@ def close_db_connection(exception):
     db = getattr(g, 'db', None)
     if db is not None:
         db.close()
+
+

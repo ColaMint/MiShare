@@ -4,7 +4,7 @@
 from mishare.server.app import app, db_required
 from mishare.server.const import *
 from flask import jsonify, request, g
-from flask.ext.login import login_user, logout_user
+from flask_login import login_user, logout_user
 
 @app.route('/login_required', methods=['GET'])
 def login_required():

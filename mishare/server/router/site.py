@@ -3,7 +3,7 @@
 
 from mishare.server.app import app
 from flask import jsonify
-from flask.ext.login import login_required
+from flask_login import login_required
 
 @app.route('/site_list', methods=['GET'])
 @login_required
