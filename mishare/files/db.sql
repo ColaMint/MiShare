@@ -19,7 +19,7 @@ SET time_zone = "+00:00";
 --
 -- 数据库: `mishare`
 --
-DROP DATABASE `mishare`;
+DROP DATABASE IF EXISTS `mishare`;
 CREATE DATABASE `mishare` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 USE `mishare`;
 
