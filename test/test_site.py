@@ -5,69 +5,57 @@ import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(__file__, '../../')))
 import unittest
+from mishare.site import site
 from mishare.site.iqiyi import Iqiyi
 from mishare.site.youku import Youku
+from mishare.lib.database import Database
+from mishare.etc.config import database
+from mishare.site.manager import Manager
 
 
 class TestSite(unittest.TestCase):
 
-    def test_iqiyi(self):
-        iqiyi = Iqiyi('13710230105', '03545328')
-        iqiyi.login()
-        if iqiyi.need_verification_code:
-            self.assertIsNone(iqiyi.valid)
-            self.assertIsNone(iqiyi.cookies)
-            self.assertIsNone(iqiyi.vip_expire_timestamp)
+    def test_all_sites(self):
+        return
+        sites = [
+            (Iqiyi, '13710230105', '03545328'),
+            (Youku, '13710230105', 'slmy03545328'),
+        ]
+        for ss in sites:
+            s = ss[0](ss[1], ss[2])
+            self.assertEqual(site.STATUS_NO_LOGIN, s.status)
+            s.login()
+            self.assertIn(s.status,
+                [   site.STATUS_NEED_VERIFICATION,
+                    site.STATUS_VALID_ACCOUNT,
+                    site.STATUS_INVALID_ACCOUNT])
+            if s.status == site.STATUS_NEED_VERIFICATION:
+                self.assertIsNone(s.cookies)
+                self.assertIsNone(s.vip_expire_timestamp)
 
-            c1 = iqiyi.verification_code_png_base64
-            self.assertGreater(len(c1), 0)
+                c1 = s.verification_code_png_base64
+                self.assertGreater(len(c1), 0)
 
-            iqiyi.refresh_cerification_code()
-            c2 = iqiyi.verification_code_png_base64
-            self.assertGreater(len(c2), 0)
-            self.assertNotEqual(c1, c2)
+                s.input_verification_code('test')
+                self.assertEqual(site.STATUS_VERIFICATION_ERROR, s.status)
 
-            iqiyi.input_verification_code('test')
-            self.assertGreater(len(iqiyi.cookies), 0)
-            self.assertIsNone(iqiyi.vip_expire_timestamp)
-            self.assertFalse(iqiyi.valid)
+                c2 = s.verification_code_png_base64
+                self.assertGreater(len(c2), 0)
+            elif s.status == site.STATUS_VALID_ACCOUNT:
+                self.assertGreater(s.vip_expire_timestamp, 0)
+                self.assertGreater(len(s.cookies), 0)
+            s.close()
 
-        else:
-            self.assertIsNotNone(iqiyi.valid)
-            if iqiyi.valid:
-                self.assertGreater(iqiyi.vip_expire_timestamp, 0)
-                self.assertGreater(len(iqiyi.cookies), 0)
+            s = ss[0](ss[1], 'test')
+            self.assertEqual(site.STATUS_NO_LOGIN, s.status)
+            s.login()
+            self.assertIn(s.status,
+                [   site.STATUS_USERNAME_OR_PASSWORD_ERROR,
+                    site.STATUS_NEED_VERIFICATION])
+            s.close()
 
-        iqiyi.close()
-
-    def test_youku(self):
-        youku = Youku('13710230105', 'slmy03545328')
-        youku.login()
-        if youku.need_verification_code:
-            self.assertIsNone(youku.valid)
-            self.assertIsNone(youku.cookies)
-            self.assertIsNone(youku.vip_expire_timestamp)
-
-            c1 = youku.verification_code_png_base64
-            self.assertGreater(len(c1), 0)
-
-            youku.refresh_cerification_code()
-            c2 = youku.verification_code_png_base64
-            self.assertGreater(len(c2), 0)
-            self.assertNotEqual(c1, c2)
-
-            youku.input_verification_code('test')
-            self.assertGreater(len(youku.cookies), 0)
-            self.assertIsNone(youku.vip_expire_timestamp)
-            self.assertFalse(youku.valid)
-
-        else:
-            self.assertIsNotNone(youku.valid)
-            if youku.valid:
-                self.assertGreater(youku.vip_expire_timestamp, 0)
-                self.assertGreater(len(youku.cookies), 0)
-
-        youku.close()
+    def test_manager(self):
+        manager = Manager()
 
 if __name__ == '__main__':
     unittest.main()

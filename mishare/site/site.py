@@ -7,9 +7,22 @@ import base64
 import StringIO
 import time
 
-class SiteBase(object):
+STATUS_NO_LOGIN                     = 1
+STATUS_NEED_VERIFICATION            = 2
+STATUS_USERNAME_OR_PASSWORD_ERROR   = 3
+STATUS_VERIFICATION_ERROR           = 4
+STATUS_VALID_ACCOUNT                = 5
+STATUS_INVALID_ACCOUNT              = 6
+
+class Site(object):
     """
     获取网站登录后cookie的抽象基本类
+    """
+
+    status = None
+    """
+    状态
+    type: int
     """
 
     username = None
@@ -42,12 +55,6 @@ class SiteBase(object):
     type: list
     """
 
-    valid = None
-    """
-    用户是否有效(密码正确+拥有会员)
-    type: bool
-    """
-
     vip_expire_timestamp = None
     """
     会员截止时间戳
@@ -60,6 +67,7 @@ class SiteBase(object):
         :type password: string 密码
         :rtype: None
         """
+        self.status = STATUS_NO_LOGIN
         self.username = username
         self.password = password
         self.driver = webdriver.Chrome()
@@ -69,22 +77,50 @@ class SiteBase(object):
     def login(self):
         """
         执行登录操作
-        若不需要验证码，校验账号的有效性
-        否则，保存验证码图片，需要进一步输入验证码
+        检查账号密码是否错误
+        检查是否需要验证码
+        若登陆成功，检查账号是否有效
         :rtype: None
         """
         self._login()
-        if self.need_verification_code:
-            return
-        self._validate()
+        if self._is_username_or_password_error():
+            self.status = STATUS_USERNAME_OR_PASSWORD_ERROR
+        if self._need_verificaton_code():
+            self._save_verification_code()
+            self.status = STATUS_NEED_VERIFICATION
+        else:
+            self._validate()
 
     abc.abstractmethod
+
     def _login(self):
         """
         执行登录操作
-        若不需要验证码，直接返回
-        否则，保存验证码图片
         :rtype: None
+        """
+        pass
+
+    abc.abstractmethod
+    def _is_username_or_password_error(self):
+        """
+        用户名或密码错误
+        :rtype: bool
+        """
+        pass
+
+    abc.abstractmethod
+    def _need_verificaton_code(self):
+        """
+        是否需要验证码
+        :rtype: bool
+        """
+        pass
+
+    abc.abstractmethod
+    def _is_verification_code_error(self):
+        """
+        验证码是否错误
+        :rtype: bool
         """
         pass
 
@@ -96,14 +132,6 @@ class SiteBase(object):
         """
         pass
 
-    abc.abstractmethod
-    def refresh_cerification_code(self):
-        """
-        刷新验证码图片, 保存在self.verification_code_png_base64
-        :rtype: None
-        """
-        pass
-
     def input_verification_code(self, verification_code):
         """
         输入验证码，点击登录，验证账号有效性
@@ -111,7 +139,13 @@ class SiteBase(object):
         :rtype: None
         """
         self._input_verification_code(verification_code)
-        self._validate()
+        if self._is_username_or_password_error():
+            self.status = STATUS_USERNAME_OR_PASSWORD_ERROR
+        if self._is_verification_code_error():
+            self._save_verification_code()
+            self.status = STATUS_VERIFICATION_ERROR
+        else:
+            self._validate()
 
     abc.abstractmethod
     def _input_verification_code(self, verification_code):
@@ -123,6 +157,7 @@ class SiteBase(object):
         pass
 
     abc.abstractmethod
+
     def _get_vip_expire_timestamp(self):
         """
         获取会员到期时间戳, 保存在self.vip_expire_timestamp
@@ -131,20 +166,13 @@ class SiteBase(object):
         pass
 
     abc.abstractmethod
+
     def _validate_cookies(self):
         """
         验证cookies是否有效
         :rtype: boolean
         """
         pass
-
-    @property
-    def need_verification_code(self):
-        """
-        是否需要验证码
-        :rtype: boolean
-        """
-        return self.verification_code_png_base64 is not None
 
     def _save_cookies(self, delay_seconds=5):
         """
@@ -162,15 +190,15 @@ class SiteBase(object):
         """
         self._save_cookies(3)
         if not self._validate_cookies():
-            self.valid = False
+            self.status = STATUS_INVALID_ACCOUNT
             return
 
         self._save_vip_expire_timestamp()
         if self.vip_expire_timestamp <= time.time():
-            self.valid = False
+            self.status = STATUS_INVALID_ACCOUNT
             return
 
-        self.valid = True
+        self.status = STATUS_VALID_ACCOUNT
 
     def _element_screenshot_png_base64(self, element):
         """
@@ -179,11 +207,11 @@ class SiteBase(object):
         :rtype: string
         """
         location = element.location
-        size     = element.size
-        left     = int(location['x'])
-        top      = int(location['y'])
-        right    = int(left + size['width'])
-        bottom   = int(top + size['height'])
+        size = element.size
+        left = int(location['x'])
+        top = int(location['y'])
+        right = int(left + size['width'])
+        bottom = int(top + size['height'])
         buff = StringIO.StringIO()
         img = Image.open(
             StringIO.StringIO(

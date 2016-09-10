@@ -1,10 +1,10 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 
-from site_base import SiteBase
+from site import Site
 import time
 
-class Youku(SiteBase):
+class Youku(Site):
 
     def _login(self):
         self.driver.get('http://www.youku.com/')
@@ -33,16 +33,34 @@ class Youku(SiteBase):
         except Exception:
             pass
 
+    def _is_username_or_password_error(self):
+        try:
+            time.sleep(1)
+            error_area = self.driver.find_element_by_css_selector('#YT-errorTips')
+            return u'密码' in error_area.text
+        except Exception:
+            return False
+
+    def _need_verificaton_code(self):
+        try:
+            verification_code = self.driver.find_element_by_css_selector('#YT-captchaImg')
+            return True
+        except Exception:
+            return False
+
+    def _is_verification_code_error(self):
+        try:
+            time.sleep(1)
+            error_area = self.driver.find_element_by_css_selector('#YT-errorTips')
+            return u'验证码' in error_area.text
+        except Exception:
+            return False
+
     def _save_verification_code(self):
         # 等待验证码图片加载完成
-        time.sleep(5)
+        time.sleep(3)
         verification_code = self.driver.find_element_by_css_selector('#YT-captchaImg')
         self.verification_code_png_base64 = self._element_screenshot_png_base64(verification_code)
-
-    def refresh_cerification_code(self):
-        verification_code = self.driver.find_element_by_css_selector('#YT-captchaImg')
-        verification_code.click()
-        self._save_verification_code()
 
     def _input_verification_code(self, verification_code):
         verification_code_input = self.driver.find_element_by_css_selector('#YT-captcha')

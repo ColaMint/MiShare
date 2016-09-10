@@ -75,7 +75,26 @@ response:
 }
 ```
 
-possible error code: -101
+## 获取贡献值
+
+url:        /get_contribution_value
+
+method:     GET
+
+parameters:
+
+| Key      | Type   | Mandatory | Description |
+|----------|--------|-----------|-------------|
+
+response:
+```javascript
+{
+    "c": 0,
+    "contribution_value":  	100    			// 贡献值
+}
+```
+
+possible error code: -100
 
 ## 获取网站列表
 
@@ -97,42 +116,8 @@ response:
        	{
 			"site_id":     	100,   								// 网站ID
 			"site_title":  	"爱奇艺",      						// 网站标题
-			"site_url":    	"http://http://www.iqiyi.com/",		// 网站URL
+			"site_domain":  "www.iqiyi.com",		            // 网站域名
 			"site_icon":   	"http://xxx"   						// 网站图标
-       	},
-       	...
-    ]
-}
-```
-
-possible error code: -100
-
-## 获取网站账号列表
-
-url:           	/account_list/<site_id>
-
-methord:       	GET
-
-parameters:
-
-| Key      | Type   | Mandatory | Description |
-|----------|--------|-----------|-------------|
-
-response:
-
-```javascript
-{
-    "c": 0,
-    "accounts": [
-     	{
-       		"account_id":  					100,   				// 账号ID
-       		"account_owner_nickname":      	"小明湖畔",    		// 账号拥有者昵称
-       		"account_owner_portrait":      	"http://xxx",   	// 账号拥有者头像链接
-       		"vip_expire_date":     			"2016-12-12",  		// 会员过期时间
-       		"max_concurrency_user":        	5,     				// 最大同时使用人数
-       		"cur_concurrency_user":        	1,     				// 当前使用人数
-       		"contribution_value_per_hour": 	25,    				// 每小时需要多少贡献值
-       		"status":      					1      				// 账号状态 0: 未使用 1: 正在使用中
        	},
        	...
     ]
@@ -159,13 +144,13 @@ response:
 	"c": 0,
 	"accounts": [
 		{
+            "site_title":                   "爱奇艺",           // 网站标题
 			"account_id":  					100,   				// 账号ID
 			"account_username":    			"abc123456",   		// 账号用户名
 			"vip_expire_date":     			"2016-12-12",  		// 会员过期时间
 			"max_concurrency_user":        	5,     				// 最大同时使用人数
 			"cur_concurrency_user":        	1,     				// 当前使用人数
-			"contribution_value_per_hour": 	25,    				// 每小时需要多少贡献值
-			"status":      					1      				// 账号状态 0: 账号无效 1: 账号有效
+			"status":      					1      				// 账号状态 0: 账号无效(需要激活) 1: 账号有效
 		},
 		...
 	]
@@ -193,9 +178,12 @@ response:
 	"accounts": [
 		{
 			"account_id": 100,     			    // 账号ID
-			"domain": "www.iqiyi.com",              // 上报监控的域名
+			"site_id":     1,                   // 网站ID
+			"site_title":  "www.iqiyi.com",     // 网站标题
+			"site_icon":   "http://xxx",        // 网站ICON
+			"site_domain": "www.iqiyi.com",     // 网站域名
 			"report_interval": 900,           	// 上报监控的时间间隔(单位秒)
-			"cookies": [                          // cookie
+			"cookies": [                        // cookie
 			{
 				"domain":  	".iqiyi.com",
 				"name":    	"c241315581245",
