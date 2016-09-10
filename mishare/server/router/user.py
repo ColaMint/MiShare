@@ -1,18 +1,17 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 
-from mishare.server.app import app, db_required, User
+from mishare.server.app import app, User
 from mishare.server.const import *
 from mishare.etc.config import server
-from flask import jsonify, request, g
+from mishare.lib.database import database
+from flask import jsonify, request
 from flask_login import login_user, logout_user
-import os
-import MySQLdb
 
 
 @app.route('/login', methods=['POST'])
-@db_required
 def login():
+    print request.data
     username = request.form['username']
     password = request.form['password']
 
@@ -23,9 +22,10 @@ def login():
         WHERE
         `username` = '%s' AND `password` = '%s'""" % (username, password)
 
-    cur = g.db.cursor(MySQLdb.cursors.DictCursor)
-    cur.execute(sql)
-    user = cur.fetchone()
+    user = None
+    with database.connection() as cur:
+        cur.execute(sql)
+        user = cur.fetchone()
 
     if user:
         login_user(User(user['user_id']))

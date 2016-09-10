@@ -65,7 +65,7 @@ class Iqiyi(Site):
 
     def _save_vip_expire_timestamp(self):
         # TODO
-        return 1480953735
+        self.vip_expire_timestamp = 1480953735
 
     def _validate_cookies(self):
         """

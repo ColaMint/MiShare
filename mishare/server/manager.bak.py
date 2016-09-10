@@ -5,6 +5,7 @@ from mishare.site import site
 from mishare.site.iqiyi import Iqiyi
 from mishare.site.youku import Youku
 from mishare.lib.database import db
+from mishare.etc.config import app as app_config
 import datetime
 import MySQLdb
 import threading
@@ -15,7 +16,6 @@ site_id_2_site_cls = {
     1: Iqiyi,
     2: Youku,
 }
-
 
 class Account(object):
     """
@@ -69,12 +69,6 @@ class Account(object):
     type: set
     """
 
-    contribution_value_per_hour = None
-    """
-    账号每被使用满一个小时，拥有者增加的贡献值
-    type: int
-    """
-
     next_login_time = None
     """
     下次登陆时间
@@ -98,8 +92,7 @@ class Account(object):
                  owner_user_id,
                  username,
                  password,
-                 max_concurrency_user,
-                 contribution_value_per_hour):
+                 max_concurrency_user):
 
         self.site = site_id_2_site_cls[site_id](username, password)
         self.site_id = site_id
@@ -109,7 +102,6 @@ class Account(object):
         self.password = password
         self.max_concurrency_user = max_concurrency_user
         self.users = []
-        self.contribution_value_per_hour = contribution_value_per_hour
         self.next_login_time = None
         self.used_seconds = None
         self.last_settle_time = datetime.datetime.now()
@@ -149,11 +141,11 @@ class Account(object):
         if len(self.users) > 0:
             delta_seconds = (now - self.last_settle_time).seconds
             self.used_seconds += delta_seconds
-            hours = self.used_seconds / 3600
-            if hours > 0:
-                self.used_seconds -= hours * 3600
+            units = self.used_seconds / app_config['cv_settle_unit_seconds']
+            if units > 0:
+                self.used_seconds -= units * 3600
                 # 增加积分
-                contribution_value = hours * self.contribution_value_per_hour
+                cv = units * app_config['cv_per_settle_unit']
                 conn = db.connection()
                 cur = conn.cursor(MySQLdb.cursors.DictCursor)
                 sql = """
@@ -162,7 +154,8 @@ class Account(object):
                     SET
                     `contribution_value` = `contribution_value` + %d
                     WHERE
-                    `user_id` = %d""" % (contribution_value, user_id)
+                    `user_id` = %d
+                """ % (cv, self.owner_user_id)
                 cur.execute(sql)
                 cur.commit()
                 cur.close()
@@ -234,7 +227,6 @@ class UserSite(object):
 
     last_eporting_time = None
 
-    contribution_value_per_hour = None
 
     used_seconds = None
 
@@ -244,10 +236,9 @@ class UserSite(object):
         self.account_id = account.account_id
         self.account = account
         self.last_reporting_time = datetime.datetime.now()
-        self.contribution_value_per_hour = 1
         self.used_seconds = 0
 
-    def cost_contribution_value(self, contribution_value):
+    def cost_contribution_value(self, cv):
         conn = db.connection()
         cur = conn.cursor(MySQLdb.cursors.DictCursor)
         sql = """
@@ -256,7 +247,7 @@ class UserSite(object):
             SET
             `contribution_value` = `contribution_value` + %d
             WHERE
-            `user_id` = '%s'""" % (contribution_value, user_id)
+            `user_id` = '%s'""" % (-cv, self.user_id)
         cur.execute(sql)
         cur.commit()
         cur.close()
@@ -267,18 +258,18 @@ class UserSite(object):
         """
         开始使用网站账号，马上扣除一个小时的贡献值
         """
-        self.cost_contribution_value(self.contribution_value_per_hour)
+        self.cost_contribution_value(app_config['cv_per_settle_unit'])
 
     def settle(self):
         now = datetime.datetime.now()
         delta_seconds = (now - self.last_reporting_time).seconds
         self.used_seconds += delta_seconds
         self.last_reporting_time = now
-        hours = self.used_seconds / 3600
-        if hours > 0:
-            self.used_seconds -= hours * 3600
-            contribution_value = hours * self.contribution_value_per_hour
-            self.cost_contribution_value(contribution_value)
+        units = self.used_seconds / app_config['cv_settle_unit_seconds']
+        if units > 0:
+            self.used_seconds -= units * 3600
+            dv = units * app_config['cv_per_settle_unit']
+            self.cost_contribution_value(dv)
 
 
 class UserSiteManager(object):
@@ -295,7 +286,7 @@ class UserSiteManager(object):
         if user_id in self.user_sites \
                 and site_id in self.user_sites[user_id]:
             user_site = self.user_sites[user_id][site_id]
-            user_site.account_id = account_id
+            user_site.account_id = account.account_id
 
         user_site = UserSite(user_id, site_id, account)
         if user_id not in self.user_sites:
@@ -352,6 +343,8 @@ class Manager(object):
     type: AccountManager
     """
 
+    running = True
+
     def __init__(self):
         self.account_manager = AccountManager()
         self.site_account_manager = SiteAccountManager()
@@ -369,8 +362,7 @@ class Manager(object):
             `site_id`,
             `username`,
             `password`,
-            `max_concurrency_user`,
-            `contribution_value_per_hour`
+            `max_concurrency_user`
             FROM
             `account`
             WHERE
@@ -386,9 +378,7 @@ class Manager(object):
                 owner_user_id=account['user_id'],
                 username=account['username'],
                 password=account['password'],
-                max_concurrency_user=account['max_concurrency_user'],
-                contribution_value_per_hour=account
-                ['contribution_value_per_hour'])
+                max_concurrency_user=account['max_concurrency_user'])
             self.account_manager.add_account(new_account)
             self.site_account_manager.add_account(new_account)
             new_account.login(run_async=True)
@@ -452,7 +442,7 @@ class Manager(object):
         """
         结算逻辑
         """
-        while(True):
+        while(self.running):
             time.sleep(datetime.timedelta(minutes=15).seconds)
             now = datetime.datetime.now()
             # 清理过久未上报状态的用户账号的状态
@@ -468,12 +458,12 @@ class Manager(object):
             for account in self.account_manager.get_accounts():
                 account.settle()
 
-    def start_periodly_settle(self, run_async=False):
-        if run_async:
-            t = threading.Thread(target=self._settle, args=())
-            t.daemon = False
-            t.start()
-        else:
-            self._settle()
+    def start_periodly_settle(self):
+        t = threading.Thread(target=self._settle, args=())
+        t.daemon = False
+        t.start()
+
+    def stop_periodly_settle(self):
+        self.running = False
 
 manager = Manager()

@@ -8,9 +8,8 @@ import unittest
 from mishare.site import site
 from mishare.site.iqiyi import Iqiyi
 from mishare.site.youku import Youku
-from mishare.lib.database import Database
-from mishare.etc.config import database
 from mishare.site.manager import Manager
+import time
 
 
 class TestSite(unittest.TestCase):
@@ -56,6 +55,12 @@ class TestSite(unittest.TestCase):
 
     def test_manager(self):
         manager = Manager()
+        manager.start_periodly_settle(run_async=True)
+
+        user_id = 5
+        site_id = 1
+        self.assertFalse(manager.is_user_using_site(user_id, site_id))
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -8,6 +8,7 @@ import unittest
 from mishare.server.app import app
 from mishare.server.const import *
 from mishare.server.router import account, site, user
+from mishare.server.sau import SAUManager
 import simplejson as json
 
 class TestServer(unittest.TestCase):
@@ -56,6 +57,10 @@ class TestServer(unittest.TestCase):
         result = json.loads(rv.data)
         self.assertEqual(CODE_OK, result['c'])
         self.assertGreater(len(result['sites']), 0)
+
+    def test_sau(self):
+        sau_manager = SAUManager()
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -10,6 +10,7 @@ server {
     location /{
         include     uwsgi_params;
         proxy_pass  http://127.0.0.1:18888;
+        add_header  Access-Control-Allow-Origin *;
     }
 }
 

@@ -183,6 +183,10 @@ class Site(object):
             time.sleep(delay_seconds)
         self.cookies = self.driver.get_cookies()
 
+    abc.abstractmethod
+    def _save_vip_expire_timestamp(self):
+        pass
+
     def _validate(self):
         """
         验证cookie与vip的有效性, 将结果保存在seld.valid
@@ -225,6 +229,7 @@ class Site(object):
         base64_string = base64.b64encode(buff.getvalue())
         buff.close()
         return base64_string
+
 
     def close(self):
         """

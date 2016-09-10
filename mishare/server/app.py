@@ -3,10 +3,8 @@
 
 import os
 from flask import jsonify, Flask, g
-from mishare.lib.database import db
 from mishare.server.const import *
 from flask_login import LoginManager, UserMixin
-from functools import wraps
 
 
 static_folder = os.path.abspath(os.path.join(__file__, '../../../static'))
@@ -39,18 +37,3 @@ class User(UserMixin):
 @login_manager.user_loader
 def load_user(user_id):
     return User(user_id)
-
-
-def db_required(func):
-    @wraps(func)
-    def wrapper(*args, **kw):
-        g.db = db.connection()
-        return func(*args, **kw)
-    return wrapper
-
-
-@app.teardown_request
-def close_db_connection(exception):
-    db = getattr(g, 'db', None)
-    if db is not None:
-        db.close()
