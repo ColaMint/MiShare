@@ -11,6 +11,7 @@ static_folder = os.path.abspath(os.path.join(__file__, '../../../static'))
 app = Flask(__name__, static_folder=static_folder)
 app.secret_key = 'mishare'
 
+
 def login_required():
     return jsonify(c=CODE_LOGIN_REQUIRED)
 

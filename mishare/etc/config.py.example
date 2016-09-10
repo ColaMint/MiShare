@@ -5,6 +5,7 @@ app = {
     'settle_interval': 900,         # 结算时间间隔(秒)
     'cv_settle_time_unit': 3600,    # 贡献值结算时间单元(秒)
     'cv_per_settle_unit': 1,        # 账号每使用一个结算时间单元，对应的贡献值
+    'login_interval': 10800,        # 账号重新登陆时间间隔(秒)
 }
 
 server = {
