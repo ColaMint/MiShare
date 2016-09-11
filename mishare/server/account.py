@@ -63,17 +63,24 @@ class Account(object):
                  username,
                  password):
 
-        site_cls = site_id_2_site_cls(site_id)
-        self.site = site_cls(username, password)
         self.site_id = site_id
         self.account_id = account_id
         self.username = username
         self.password = password
         self.next_login_time = datetime.datetime.now()
+        self.init_site()
+
+    def init_site(self):
+        if self.site:
+            self.site.close()
+        site_cls = site_id_2_site_cls(site_id)
+        self.site = site_cls(username, password)
 
     def login(self, run_async=False):
         self.next_login_time = datetime.datetime.now(
             ) + datetime.timedelta(seconds=app_config['login_interval'])
+        if self.site:
+            self.init_site()
         if run_async:
             t = threading.Thread(target=self.site.login, args=())
             t.daemon = False
@@ -96,3 +103,7 @@ class Account(object):
     @property
     def cookies(self):
         return self.site.cookies
+
+    @property
+    def verification_code(self):
+        return self.site.verification_code_png_base64

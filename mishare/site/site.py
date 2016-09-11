@@ -230,7 +230,6 @@ class Site(object):
         buff.close()
         return base64_string
 
-
     def close(self):
         """
         关闭浏览器引擎
