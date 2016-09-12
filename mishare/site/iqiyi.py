@@ -35,10 +35,9 @@ class Iqiyi(Site):
         except Exception:
             return False
 
-    def _need_verificaton_code(self):
+    def _need_verification_code(self):
         try:
-            verification_code = self.driver.find_element_by_css_selector('span.yzimg[data-loginbox-elem=piccode] > img')
-            self._save_verification_code()
+            self.driver.find_element_by_css_selector('span.yzimg[data-loginbox-elem=piccode] > img')
             return True
         except Exception:
             return False

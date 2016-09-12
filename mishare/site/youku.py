@@ -41,9 +41,9 @@ class Youku(Site):
         except Exception:
             return False
 
-    def _need_verificaton_code(self):
+    def _need_verification_code(self):
         try:
-            verification_code = self.driver.find_element_by_css_selector('#YT-captchaImg')
+            self.driver.find_element_by_css_selector('#YT-captchaImg')
             return True
         except Exception:
             return False

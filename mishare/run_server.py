@@ -11,4 +11,5 @@ from mishare.etc.config import server
 app.run(
     host=server['host'],
     port=server['port'],
-    debug=server['debug'])
+    debug=server['debug'],
+    use_reloader=False)

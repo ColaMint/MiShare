@@ -2,6 +2,7 @@
 # -*- coding:utf-8 -*-
 
 from mishare.server.app import app
+from mishare.etc.config import server
 from mishare.lib.database import database
 from flask import jsonify
 from flask_login import login_required
@@ -21,5 +22,6 @@ def site_list():
     with database.connection() as cur:
         cur.execute(sql)
         sites = cur.fetchall()
-
+        for site in sites:
+            site['site_icon'] = 'http://%s%s' % (server['domain'], site['site_icon'])
     return jsonify(c=CODE_OK, sites=sites)

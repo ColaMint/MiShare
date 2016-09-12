@@ -26,7 +26,7 @@ class SAUManager(object):
 
     def search(self, site_id=None, account_id=None, user_id=None):
         results = []
-        for s, a, u in self.sau.iteritems():
+        for s, a, u in self.sau:
             if site_id is not None and s != site_id:
                 continue
             if account_id is not None and a != account_id:
@@ -38,7 +38,7 @@ class SAUManager(object):
 
     def remove(self, site_id=None, account_id=None, user_id=None):
         for r in self.search(site_id, account_id, user_id):
-            self.sau.discard(r)
+            self.sau.discard((r.site_id, r.account_id, r.user_id))
 
     def clear(self):
         self.sau.clear()

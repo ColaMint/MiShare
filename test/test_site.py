@@ -1,6 +1,5 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
-
 import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(__file__, '../../')))
@@ -19,6 +18,7 @@ class TestSite(unittest.TestCase):
         sites = [
             (Iqiyi, '13710230105', '03545328'),
             (Youku, '13710230105', 'slmy03545328'),
+            (Tencent, '754281128', 'CHIchi754281128'),
         ]
         for ss in sites:
             s = ss[0](ss[1], ss[2])

@@ -30,7 +30,7 @@ class Settle(object):
     def settle_periodly(self, run_async=False):
         if run_async:
             t = threading.Thread(target=self.settle, args=(True))
-            t.daemon = False
+            t.daemon = True
             t.start()
         else:
             self.settle(True)
@@ -67,7 +67,7 @@ class Settle(object):
         if user_site is None:
             return
         now = datetime.datetime.now()
-        delta_seconds = (now - user_site.last_reporting_time).seconds
+        delta_seconds = (now - user_site.last_report_time).seconds
         user_site.used_seconds += delta_seconds
         units = user_site.used_seconds / app_config['cv_settle_unit_seconds']
         if units > 0:
@@ -85,9 +85,10 @@ class Settle(object):
         user_site = self.find_user_site(user_id=user_id, site_id=site_id)
         if user_site is not None:
             return
+        user_site = UserSite(user_id=user_id, site_id=site_id)
         key = '%d.%d' % (user_id, site_id)
         self.user_sites[key] = user_site
-        self.modify_user_contribution_value(user_id=-user_id, cb_diff=-app_config['cv_per_settle_unit'])
+        self.modify_user_contribution_value(user_id=-user_id, cv_diff=-app_config['cv_per_settle_unit'])
 
     def clear_user_site(self):
         now = datetime.datetime.now()
@@ -110,7 +111,6 @@ class Settle(object):
                 WHERE
                 `user_id` = %d""" % (-cv_diff, user_id)
             cur.execute(sql)
-            cur.commit()
 
 
 class Account(object):
