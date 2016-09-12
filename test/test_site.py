@@ -16,9 +16,9 @@ class TestSite(unittest.TestCase):
     def test_all_sites(self):
         return
         sites = [
-            (Iqiyi, '13710230105', '03545328'),
-            (Youku, '13710230105', 'slmy03545328'),
-            (Tencent, '754281128', 'CHIchi754281128'),
+            (Iqiyi, '', ''),
+            (Youku, '', ''),
+            (Tencent, '', ''),
         ]
         for ss in sites:
             s = ss[0](ss[1], ss[2])
